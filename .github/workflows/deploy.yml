@@ -1,0 +1,20 @@
+name: Deploy to GitHub Packages
+run-name: ${{ github.actor }} is deploying to GitHub packages
+on: [push]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+
+      - name: Build and deploy
+        run: |
+          mvn clean package deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
