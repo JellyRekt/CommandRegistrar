@@ -79,18 +79,21 @@ class CommandTreeNode {
         if (node == null) {
             node = children.put(key, new CommandTreeNode());
         }
+        // If this is not the end of the subcommand
+        if (!subcommand.trim().isEmpty()) {
+            node.register(subcommand, aliases, description, usage, executor);
+            return;
+        }
         // If this is the end of the command being registered, set aliases, description, and usage.
         // This means commands can be registered out of order, like first /foo bar and then /foo
         // It also means certain subcommands may not have an executor, if they are not a complete command.
-        if (!subcommand.trim().isEmpty()) {
-            node.description = description;
-            node.usage = usage;
-            node.commandExecutor = executor;
-            // Add a reference to the child node
-            aliases.add(key);
-            for (String alias : aliases) {
-                childAliases.put(alias, key);
-            }
+        node.description = description;
+        node.usage = usage;
+        node.commandExecutor = executor;
+        // Add a reference to the child node
+        aliases.add(key);
+        for (String alias : aliases) {
+            childAliases.put(alias, key);
         }
     }
 
@@ -114,13 +117,16 @@ class CommandTreeNode {
         String subcommand = split[1];
         // Add any parameters to the environment
         Scanner scanner = new Scanner(subcommand);
-        // TODO Should I check for params before subcommands, or vise versa?
-        // Example: Distinguish between second token in the following commands:
-        // warp <name>
-        // warp set <name>
-        for (int i = 0; i < paramList.size(); i++) {
-            // TODO handle incorrect number of params provided
+        int i;
+        for (i = 0; i < paramList.size(); i++) {
+            String token = scanner.next();
+            if (childAliases.containsKey(token)) {
+                break;
+            }
             env.put(paramList.get(i), scanner.next());
+        }
+        if (i < paramList.size()) {
+            // TODO Handle incorrect number of params
         }
         scanner.close();
         // Add remaining tokens to the subcommand
@@ -128,7 +134,8 @@ class CommandTreeNode {
         while (scanner.hasNext()) {
             builder.append(scanner.next());
         }
+        subcommand = builder.toString();
         // Call the subcommand on the child node
-        get(key).execute(sender, builder.toString(), env);
+        get(key).execute(sender, subcommand, env);
     }
 }
