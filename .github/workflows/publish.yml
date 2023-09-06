@@ -1,13 +1,10 @@
 name: Deploy to GitHub Packages
-run-name: ${{ github.actor }} is deploying to GitHub packages
+run-name: ${{ github.actor }} is publishing to GitHub packages
 on: [push]
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Test token
-        run: echo ${{ secrets.GITHUB_TOKEN }}
-
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -17,7 +14,7 @@ jobs:
           distribution: 'temurin'
           java-version: 17
 
-      - name: Build and deploy
+      - name: Publish
         run: mvn -X deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
