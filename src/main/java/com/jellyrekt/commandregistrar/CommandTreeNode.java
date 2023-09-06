@@ -30,19 +30,6 @@ class CommandTreeNode {
     private CommandExecutor commandExecutor;
 
     /**
-     * Construct a new node.
-     *
-     * @param description
-     * @param usage
-     * @param commandExecutor
-     */
-    CommandTreeNode(String description, String usage, CommandExecutor commandExecutor) {
-        this.description = description;
-        this.usage = usage;
-        this.commandExecutor = commandExecutor;
-    }
-
-    /**
      * Execute the command contained in this node.
      *
      * @param sender
@@ -55,22 +42,45 @@ class CommandTreeNode {
     /**
      * Register a subcommand under this command.
      *
-     * @param key         Key (first token) of the subcommand
+     * @param subcommand  Key (first token) of the subcommand
      * @param aliases     Strings which are accepted as
      * @param description Description for the subcommand
      * @param usage       Usage message for the subcommand
      * @param executor    CommandExecutor to handle the command
      */
-    void register(String key, Set<String> aliases, String description, String usage, CommandExecutor executor) {
-        aliases.add(key);
-        for (String alias : aliases) {
-            childAliases.put(alias, key);
+    void register(String subcommand, Set<String> aliases, String description, String usage, CommandExecutor executor) {
+        // Consume the first token to use as a key
+        String[] split = subcommand.split(" ", 2);
+        String key = split[0];
+        subcommand = split[1];
+        // Consume parameters
+        // Parameters right now are assumed to be preceded by a ':'.
+        // Thus, all I am doing is trimming these off the beginning of the string.
+        // I am not tracking what param keys are expected.
+        subcommand = subcommand.replaceFirst("(:.* *)*", "");
+        // Get or insert the next node in the command tree
+        CommandTreeNode node = get(key);
+        if (node == null) {
+            node = children.put(key, new CommandTreeNode());
         }
-        children.put(key, new CommandTreeNode(description, usage, executor));
+        // If this is the end of the command being registered, set aliases, description, and usage.
+        // This means commands can be registered out of order, like first /foo bar and then /foo
+        // It also means certain subcommands may not have an executor, if they are not a complete command.
+        if (!subcommand.trim().isEmpty()) {
+            node.description = description;
+            node.usage = usage;
+            node.commandExecutor = executor;
+            // Add a reference to the child node
+            aliases.add(key);
+            for (String alias : aliases) {
+                childAliases.put(alias, key);
+            }
+        }
     }
 
     /**
      * Get the child node with the given key or alias
+     *
      * @param alias Subcommand key or alias
      * @return Node containing the subcommand
      */
