@@ -2,9 +2,7 @@ package com.jellyrekt.commandregistrar;
 
 import org.bukkit.command.CommandSender;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 class CommandTreeNode {
     /**
@@ -28,22 +26,26 @@ class CommandTreeNode {
      * Executor to handle the command contained in this node
      */
     private CommandExecutor commandExecutor;
+    /**
+     * List of parameters that should receive arguments when the command is executed
+     */
+    private List<String> paramList = new ArrayList<>();
 
     /**
-     * Execute the command contained in this node.
+     * Get the child node with the given key or alias
      *
-     * @param sender
-     * @param env
+     * @param alias Subcommand key or alias
+     * @return Node containing the subcommand
      */
-    void execute(CommandSender sender, Map<String, String> env) {
-        commandExecutor.execute(sender, env);
+    CommandTreeNode get(String alias) {
+        return children.get(childAliases.get(alias));
     }
 
     /**
      * Register a subcommand under this command.
      *
      * @param subcommand  Key (first token) of the subcommand
-     * @param aliases     Strings which are accepted as
+     * @param aliases     Strings which are accepted as aliases for this command
      * @param description Description for the subcommand
      * @param usage       Usage message for the subcommand
      * @param executor    CommandExecutor to handle the command
@@ -54,10 +56,24 @@ class CommandTreeNode {
         String key = split[0];
         subcommand = split[1];
         // Consume parameters
-        // Parameters right now are assumed to be preceded by a ':'.
-        // Thus, all I am doing is trimming these off the beginning of the string.
-        // I am not tracking what param keys are expected.
-        subcommand = subcommand.replaceFirst("(:.* *)*", "");
+        Scanner scanner = new Scanner(subcommand);
+        String next = "";
+        while (scanner.hasNext()) {
+            next = scanner.next();
+            // If not a param
+            if (next.charAt(0) != ':') {
+                break;
+            }
+            // Trim off the : and add to the param list.
+            paramList.add(next.substring(1));
+        }
+        // Turn the remainder of the string into the subcommand
+        StringBuilder builder = new StringBuilder(next);
+        while (scanner.hasNext()) {
+            builder.append(scanner.next());
+        }
+        scanner.close();
+        subcommand = builder.toString();
         // Get or insert the next node in the command tree
         CommandTreeNode node = get(key);
         if (node == null) {
@@ -79,12 +95,36 @@ class CommandTreeNode {
     }
 
     /**
-     * Get the child node with the given key or alias
-     *
-     * @param alias Subcommand key or alias
-     * @return Node containing the subcommand
+     * Execute the given command
+     * @param sender
+     * @param command
+     * @param env
      */
-    CommandTreeNode get(String alias) {
-        return children.get(childAliases.get(alias));
+    protected void execute(CommandSender sender, String command, Map<String, String> env) {
+        // Base case: we've arrived at the final node
+        if (command.equals("")) {
+            commandExecutor.execute(sender, env);
+            return;
+        }
+        // Duplicate the environment
+        env = new HashMap<>(env);
+        // Get the key/alias and subcommand
+        String[] split = command.split(" ", 2);
+        String key = split[0];
+        String subcommand = split[1];
+        // Add any parameters to the environment
+        Scanner scanner = new Scanner(subcommand);
+        for (int i = 0; i < paramList.size(); i++) {
+            // TODO handle incorrect number of params provided
+            env.put(paramList.get(i), scanner.next());
+        }
+        scanner.close();
+        // Add remaining tokens to the subcommand
+        StringBuilder builder = new StringBuilder();
+        while (scanner.hasNext()) {
+            builder.append(scanner.next());
+        }
+        // Call the subcommand on the child node
+        get(key).execute(sender, builder.toString(), env);
     }
 }
