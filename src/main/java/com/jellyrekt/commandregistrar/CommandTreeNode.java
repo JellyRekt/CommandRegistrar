@@ -3,7 +3,6 @@ package com.jellyrekt.commandregistrar;
 import org.bukkit.command.CommandSender;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,7 +10,7 @@ class CommandTreeNode {
     /**
      * Nodes containing the subcommand of this node's command
      */
-    private Set<CommandTreeNode> children = new HashSet<>();
+    private Map<String, CommandTreeNode> children = new HashMap<>();
     /**
      * Maps a child command's alias to its actual key.
      * The key itself is registered as an alias.
@@ -50,7 +49,7 @@ class CommandTreeNode {
      * @param env
      */
     void execute(CommandSender sender, Map<String, String> env) {
-        // TODO
+        commandExecutor.execute(sender, env);
     }
 
     /**
@@ -67,6 +66,15 @@ class CommandTreeNode {
         for (String alias : aliases) {
             childAliases.put(alias, key);
         }
-        children.add(new CommandTreeNode(description, usage, executor));
+        children.put(key, new CommandTreeNode(description, usage, executor));
+    }
+
+    /**
+     * Get the child node with the given key or alias
+     * @param alias Subcommand key or alias
+     * @return Node containing the subcommand
+     */
+    CommandTreeNode get(String alias) {
+        return children.get(childAliases.get(alias));
     }
 }
