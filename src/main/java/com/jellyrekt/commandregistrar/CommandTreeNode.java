@@ -50,7 +50,7 @@ class CommandTreeNode {
      * @param usage       Usage message for the subcommand
      * @param executor    CommandExecutor to handle the command
      */
-    void register(String subcommand, Set<String> aliases, String description, String usage, CommandExecutor executor) {
+    void add(String subcommand, Set<String> aliases, String description, String usage, CommandExecutor executor) {
         // Consume the first token to use as a key
         String[] split = subcommand.split(" ", 2);
         String key = split[0];
@@ -81,7 +81,7 @@ class CommandTreeNode {
         }
         // If this is not the end of the subcommand
         if (!subcommand.trim().isEmpty()) {
-            node.register(subcommand, aliases, description, usage, executor);
+            node.add(subcommand, aliases, description, usage, executor);
             return;
         }
         // If this is the end of the command being registered, set aliases, description, and usage.
@@ -137,5 +137,44 @@ class CommandTreeNode {
         subcommand = builder.toString();
         // Call the subcommand on the child node
         get(key).execute(sender, subcommand, env);
+    }
+
+
+
+    /**
+     *
+     * @param command
+     * @return True if the given command is an alias of a command registered to this tree.
+     */
+    public boolean isAlias(String command) {
+        // Base case: we've arrived at the final node
+        if (command.equals("")) {
+            return true;
+        }
+        // Get the key/alias and subcommand
+        String[] split = command.split(" ", 2);
+        String key = split[0];
+        String subcommand = split[1];
+        // Add any parameters to the environment
+        Scanner scanner = new Scanner(subcommand);
+        int i;
+        for (i = 0; i < paramList.size(); i++) {
+            String token = scanner.next();
+            if (childAliases.containsKey(token)) {
+                break;
+            }
+        }
+        if (i < paramList.size()) {
+            // TODO Handle incorrect number of params
+        }
+        scanner.close();
+        // Add remaining tokens to the subcommand
+        StringBuilder builder = new StringBuilder();
+        while (scanner.hasNext()) {
+            builder.append(scanner.next());
+        }
+        subcommand = builder.toString();
+        // Call the subcommand on the child node
+        return get(key).isAlias(subcommand);
     }
 }
