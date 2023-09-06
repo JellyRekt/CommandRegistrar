@@ -114,6 +114,10 @@ class CommandTreeNode {
         String subcommand = split[1];
         // Add any parameters to the environment
         Scanner scanner = new Scanner(subcommand);
+        // TODO Should I check for params before subcommands, or vise versa?
+        // Example: Distinguish between second token in the following commands:
+        // warp <name>
+        // warp set <name>
         for (int i = 0; i < paramList.size(); i++) {
             // TODO handle incorrect number of params provided
             env.put(paramList.get(i), scanner.next());
