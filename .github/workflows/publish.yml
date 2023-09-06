@@ -17,6 +17,9 @@ jobs:
           distribution: 'temurin'
           java-version: 17
 
+      - name: Build
+        run: mvn -B package
+
       - name: Publish
         run: mvn deploy
         env:
