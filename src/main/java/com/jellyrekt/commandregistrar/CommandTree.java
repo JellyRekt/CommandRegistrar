@@ -5,7 +5,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
-import java.util.Set;
 
 public class CommandTree extends CommandTreeNode {
     private String rootCommand;
@@ -24,14 +23,13 @@ public class CommandTree extends CommandTreeNode {
      * Register a command.
      *
      * @param command     Full command string
-     * @param aliases     Strings which are accepted as aliases for this command
      * @param description Description for the command
      * @param usage       Usage message for the command
      * @param executor    CommandExecutor to handle the command
      */
     @Override
-    public void add(String command, Set<String> aliases, String description, String usage, CommandExecutor executor) {
-        super.add(stripExtraSpaces(command), aliases, description, usage, executor);
+    public void add(String command, String description, String usage, CommandExecutor executor) {
+        super.add(stripExtraSpaces(command), description, usage, executor);
     }
 
     /**
