@@ -14,6 +14,8 @@ public class CommandTree extends CommandTreeNode {
 
     public CommandTree(String rootCommand, JavaPlugin plugin) {
         super();
+        // TODO
+        // Validate that rootCommand contains only one token
         this.rootCommand = rootCommand;
         this.plugin = plugin;
     }
@@ -29,7 +31,7 @@ public class CommandTree extends CommandTreeNode {
      */
     @Override
     public void add(String command, Set<String> aliases, String description, String usage, CommandExecutor executor) {
-        add(command, aliases, description, usage, executor);
+        super.add(stripExtraSpaces(command), aliases, description, usage, executor);
     }
 
     /**
@@ -39,7 +41,7 @@ public class CommandTree extends CommandTreeNode {
      * @param command
      */
     public void execute(CommandSender sender, String command) {
-        execute(sender, command, new HashMap<>());
+        super.execute(sender, stripExtraSpaces(command), new HashMap<>());
     }
 
     public void register() {
@@ -64,5 +66,9 @@ public class CommandTree extends CommandTreeNode {
 
     protected JavaPlugin getPlugin() {
         return plugin;
+    }
+
+    String stripExtraSpaces(String s) {
+        return s.trim().replaceAll(" +", " ");
     }
 }
