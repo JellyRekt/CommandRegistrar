@@ -2,15 +2,9 @@ package com.jellyrekt.commandregistrar;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.EventListener;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 public class CommandTree extends CommandTreeNode {
@@ -35,7 +29,7 @@ public class CommandTree extends CommandTreeNode {
      */
     @Override
     public void add(String command, Set<String> aliases, String description, String usage, CommandExecutor executor) {
-        super.add(command, aliases, description, usage, executor);
+        add(command, aliases, description, usage, executor);
     }
 
     /**

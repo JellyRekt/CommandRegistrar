@@ -77,7 +77,8 @@ class CommandTreeNode {
         // Get or insert the next node in the command tree
         CommandTreeNode node = get(key);
         if (node == null) {
-            node = children.put(key, new CommandTreeNode());
+            children.put(key, new CommandTreeNode());
+            node = get(key);
         }
         // If this is not the end of the subcommand
         if (!subcommand.trim().isEmpty()) {
