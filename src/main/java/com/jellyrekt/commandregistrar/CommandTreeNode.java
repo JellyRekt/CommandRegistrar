@@ -37,34 +37,26 @@ class CommandTreeNode {
     void add(String subcommand, String description, String usage, CommandExecutor executor) {
         // Base case: Emptry string
         if (subcommand.isEmpty()) {
-            System.out.println("Base case reached");
             this.description = description;
             this.usage = usage;
             this.commandExecutor = executor;
             return;
         }
-        System.out.println("Adding " + subcommand);
         // Consume the first token to use as a key
         String[] split = subcommand.split(" ", 2);
         String key = split[0];
         subcommand = split[1];
-        System.out.println("Key: " + key);
-        System.out.println("Subcommand: " + subcommand);
         // Consume parameters
         Scanner scanner = new Scanner(subcommand);
         String next = "";
-        System.out.println("Scanning subcommand for params");
         while (scanner.hasNext()) {
             next = scanner.next();
-            System.out.println("Found token " + next);
             // If not a param
             if (!isParam(next)) {
-                System.out.println("Not a param");
                 break;
             }
             // Trim off the : and add to the param list.
             paramList.add(extractParamKey(next));
-            System.out.println("Added param " + paramList.get(paramList.size() - 1));
         }
         // If the end of the string hasn't been reached
         if (!scanner.hasNext()) {
@@ -82,7 +74,6 @@ class CommandTreeNode {
         // Create a child if it doesn't already exist
         // (It probably doesn't, but this way commands don't have to be defined in order)
         if (node == null) {
-            System.out.println("Putting new node for " + key);
             children.put(key, new CommandTreeNode());
             node = children.get(key);
         }
@@ -122,12 +113,12 @@ class CommandTreeNode {
         if (i < paramList.size()) {
             // TODO Handle incorrect number of params
         }
-        scanner.close();
         // Add remaining tokens to the subcommand
         StringBuilder builder = new StringBuilder();
         while (scanner.hasNext()) {
             builder.append(scanner.next() + " ");
         }
+        scanner.close();
         subcommand = builder.toString();
         // Call the subcommand on the child node
         children.get(key).execute(sender, subcommand, env);
@@ -138,7 +129,7 @@ class CommandTreeNode {
      * @param s String to check
      * @return True if the string matches the param pattern
      */
-    private boolean isParam(String s) {
+    private static boolean isParam(String s) {
         return s.charAt(0) == ':';
     }
 
@@ -147,7 +138,7 @@ class CommandTreeNode {
      * @param s Param string (formatted according to rules)
      * @return The string used as a key in the environment
      */
-    private String extractParamKey(String s) {
+    private static String extractParamKey(String s) {
         return s.substring(1);
     }
 }

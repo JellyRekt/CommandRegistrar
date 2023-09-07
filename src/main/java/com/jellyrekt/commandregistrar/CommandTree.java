@@ -5,11 +5,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class CommandTree extends CommandTreeNode {
     private String rootCommand;
     private JavaPlugin plugin;
     private CommandListener commandListener = new CommandListener(this);
+
+    private static Set<CommandTree> registry = new HashSet<>();
 
     public CommandTree(String rootCommand, JavaPlugin plugin) {
         super();
@@ -17,6 +21,7 @@ public class CommandTree extends CommandTreeNode {
         // Validate that rootCommand contains only one token
         this.rootCommand = rootCommand;
         this.plugin = plugin;
+        registry.add(this);
     }
 
     /**
@@ -66,7 +71,7 @@ public class CommandTree extends CommandTreeNode {
         return plugin;
     }
 
-    String stripExtraSpaces(String s) {
+    static String stripExtraSpaces(String s) {
         return s.trim().replaceAll(" +", " ");
     }
 }

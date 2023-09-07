@@ -14,17 +14,24 @@ public class CommandListener implements Listener {
 
     @EventHandler
     public void onServerCommand(ServerCommandEvent event) {
-        tree.getPlugin().getLogger().info("Console executed " + event.getCommand());
-        // TODO
+        String command = CommandTree.stripExtraSpaces(event.getCommand());
+        if (!isCommand(command)) {
+            return;
+        }
+        tree.execute(event.getSender(), command);
     }
 
     @EventHandler
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        tree.getPlugin().getLogger().info("Player executed " + event.getMessage());
-        // TODO
+        String command = CommandTree.stripExtraSpaces(event.getMessage());
+        if (!isCommand(command)) {
+            return;
+        }
+        tree.execute(event.getPlayer(), command);
     }
 
-    private void handle(Event event) {
-        // TODO
+    private boolean isCommand(String message) {
+        // TODO probably more logic needed than this
+        return message.split(" ", 2)[0].equals(tree.getRootCommand());
     }
 }
