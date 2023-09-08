@@ -83,11 +83,13 @@ class CommandTreeNode {
 
     /**
      * Execute the given command
+     *
      * @param sender
      * @param command
      * @param env
      */
     protected void execute(CommandSender sender, String command, Map<String, String> env) {
+        System.out.println("Command: " + command);
         // Base case: we've arrived at the final node
         if (command.equals("")) {
             commandExecutor.execute(sender, env);
@@ -102,30 +104,36 @@ class CommandTreeNode {
         // Add any parameters to the environment
         Scanner scanner = new Scanner(subcommand);
         int i;
+        String token = "";
         for (i = 0; i < paramList.size(); i++) {
-            String token = scanner.next();
+            token = scanner.next();
             // Stop parsing args if a symbol has been reached
             if (children.containsKey(token)) {
                 break;
             }
-            env.put(paramList.get(i), scanner.next());
+            env.put(paramList.get(i), token);
         }
         if (i < paramList.size()) {
             // TODO Handle incorrect number of params
         }
-        // Add remaining tokens to the subcommand
-        StringBuilder builder = new StringBuilder();
+        // If the end of the string hasn't been reached
+        if (!scanner.hasNext()) {
+            token = "";
+        }
+        // Turn the remainder of the string into the subcommand
+        StringBuilder builder = new StringBuilder(token + " ");
         while (scanner.hasNext()) {
-            builder.append(scanner.next() + " ");
+            builder.append(scanner.next()).append(" ");
         }
         scanner.close();
-        subcommand = builder.toString();
+        subcommand = builder.toString().trim();
         // Call the subcommand on the child node
         children.get(key).execute(sender, subcommand, env);
     }
 
     /**
      * Checks if a String matches the param pattern
+     *
      * @param s String to check
      * @return True if the string matches the param pattern
      */
@@ -135,10 +143,30 @@ class CommandTreeNode {
 
     /**
      * Converts a param string to the key used for the environment
+     *
      * @param s Param string (formatted according to rules)
      * @return The string used as a key in the environment
      */
     private static String extractParamKey(String s) {
         return s.substring(1);
+    }
+
+    protected Map<String, CommandTreeNode> getChildren() {
+        return children;
+    }
+
+    protected String toStringRec(String key, int depth) {
+        StringBuilder builder = new StringBuilder("\n");
+        for (int i = 0; i < depth; i++) {
+            builder.append("| ");
+        }
+        builder.append(key);
+        for (String param : paramList) {
+            builder.append(" :").append(param);
+        }
+        for (String k : children.keySet()) {
+            builder.append(children.get(k).toStringRec(k, depth + 1));
+        }
+        return builder.toString();
     }
 }

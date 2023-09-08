@@ -74,4 +74,12 @@ public class CommandTree extends CommandTreeNode {
     static String stripExtraSpaces(String s) {
         return s.trim().replaceAll(" +", " ");
     }
+
+    public String toString() {
+        StringBuilder builder = new StringBuilder("\n");
+        for (String key : getChildren().keySet()) {
+            builder.append(getChildren().get(key).toStringRec(key, 0));
+        }
+        return builder.toString();
+    }
 }
