@@ -99,8 +99,6 @@ class CommandTreeNode {
             commandExecutor.execute(sender, env);
             return;
         }
-        // Duplicate the environment
-        env = new HashMap<>(env);
         // Get the key/alias and subcommand
         String[] split = command.split(" ", 2);
         String key = split[0];
