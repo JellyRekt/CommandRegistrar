@@ -24,7 +24,11 @@ class CommandTreeNode {
     /**
      * List of parameters that should receive arguments when the command is executed
      */
-    private List<String> paramList = new ArrayList<>();
+    private List<String> paramNames = new ArrayList<>();
+
+    CommandTreeNode(List<String> paramNames) {
+        this.paramNames = paramNames;
+    }
 
     /**
      * Register a subcommand under this command.
@@ -35,7 +39,7 @@ class CommandTreeNode {
      * @param executor    CommandExecutor to handle the command
      */
     void add(String subcommand, String description, String usage, CommandExecutor executor) {
-        // Base case: Emptry string
+        // Base case: Empty string
         if (subcommand.isEmpty()) {
             this.description = description;
             this.usage = usage;
@@ -47,6 +51,7 @@ class CommandTreeNode {
         String key = split[0];
         subcommand = split[1];
         // Consume parameters
+        List<String> paramNames = new ArrayList<>();
         Scanner scanner = new Scanner(subcommand);
         String next = "";
         while (scanner.hasNext()) {
@@ -56,7 +61,7 @@ class CommandTreeNode {
                 break;
             }
             // Trim off the : and add to the param list.
-            paramList.add(extractParamKey(next));
+            paramNames.add(extractParamKey(next));
         }
         // If the end of the string hasn't been reached
         if (!scanner.hasNext()) {
@@ -74,7 +79,7 @@ class CommandTreeNode {
         // Create a child if it doesn't already exist
         // (It probably doesn't, but this way commands don't have to be defined in order)
         if (node == null) {
-            children.put(key, new CommandTreeNode());
+            children.put(key, new CommandTreeNode(paramNames));
             node = children.get(key);
         }
         // Recursive call
@@ -88,8 +93,7 @@ class CommandTreeNode {
      * @param command
      * @param env
      */
-    protected void execute(CommandSender sender, String command, Map<String, String> env) {
-        System.out.println("Command: " + command);
+    protected void execute(CommandSender sender, String command, Map<String, String> env) throws Exception {
         // Base case: we've arrived at the final node
         if (command.equals("")) {
             commandExecutor.execute(sender, env);
@@ -101,20 +105,26 @@ class CommandTreeNode {
         String[] split = command.split(" ", 2);
         String key = split[0];
         String subcommand = split[1];
-        // Add any parameters to the environment
+        // Easy-to-use ref to the next node to be called
+        CommandTreeNode child = children.get(key);
+        // Add any arguments to the environment
+        List<String> args = new ArrayList<>();
         Scanner scanner = new Scanner(subcommand);
-        int i;
         String token = "";
-        for (i = 0; i < paramList.size(); i++) {
+        while (scanner.hasNext()) {
             token = scanner.next();
             // Stop parsing args if a symbol has been reached
-            if (children.containsKey(token)) {
+            if (child.children.containsKey(token)) {
                 break;
             }
-            env.put(paramList.get(i), token);
+            args.add(token);
         }
-        if (i < paramList.size()) {
+        if (args.size() != child.paramNames.size()) {
             // TODO Handle incorrect number of params
+            throw new Exception(String.format("After '%s': expected %d args, %d supplied", key, paramNames.size(), args.size()));
+        }
+        for (int i = 0; i < child.paramNames.size(); i++) {
+            env.put(child.paramNames.get(i), args.get(i));
         }
         // If the end of the string hasn't been reached
         if (!scanner.hasNext()) {
@@ -128,7 +138,7 @@ class CommandTreeNode {
         scanner.close();
         subcommand = builder.toString().trim();
         // Call the subcommand on the child node
-        children.get(key).execute(sender, subcommand, env);
+        child.execute(sender, subcommand, env);
     }
 
     /**
@@ -161,7 +171,7 @@ class CommandTreeNode {
             builder.append("| ");
         }
         builder.append(key);
-        for (String param : paramList) {
+        for (String param : paramNames) {
             builder.append(" :").append(param);
         }
         for (String k : children.keySet()) {
