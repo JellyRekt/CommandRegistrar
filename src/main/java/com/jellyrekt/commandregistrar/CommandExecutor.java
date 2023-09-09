@@ -10,5 +10,5 @@ public interface CommandExecutor {
      * @param sender The entity (player or console) sending the command.
      * @param env The parameter names and argument values for this command.
      */
-    public void execute(CommandSender sender, Map<String, String> env);
+    public void execute(CommandSender sender, Map<String, String[]> env);
 }

@@ -30,7 +30,6 @@ public class CommandListener implements Listener {
     }
 
     private boolean isCommand(String message) {
-        // TODO probably more logic needed than this
-        return message.split(" ", 2)[0].equals(tree.getRootCommand());
+        return tree.getChildren().containsKey(message.split(" ", 2)[0]);
     }
 }

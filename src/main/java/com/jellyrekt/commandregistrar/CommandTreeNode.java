@@ -10,25 +10,9 @@ class CommandTreeNode {
      */
     private Map<String, CommandTreeNode> children = new HashMap<>();
     /**
-     * Description for the command contained in this node
-     */
-    private String description;
-    /**
-     * Usage message for the command contained in this node
-     */
-    private String usage;
-    /**
      * Executor to handle the command contained in this node
      */
     private CommandExecutor commandExecutor;
-    /**
-     * List of parameters that should receive arguments when the command is executed
-     */
-    private List<String> paramNames = new ArrayList<>();
-
-    CommandTreeNode(List<String> paramNames) {
-        this.paramNames = paramNames;
-    }
 
     /**
      * Register a subcommand under this command.
@@ -41,49 +25,23 @@ class CommandTreeNode {
     void add(String subcommand, String description, String usage, CommandExecutor executor) {
         // Base case: Empty string
         if (subcommand.isEmpty()) {
-            this.description = description;
-            this.usage = usage;
             this.commandExecutor = executor;
             return;
         }
         // Consume the first token to use as a key
         String[] split = subcommand.split(" ", 2);
         String key = split[0];
-        subcommand = split[1];
-        // Consume parameters
-        List<String> paramNames = new ArrayList<>();
-        Scanner scanner = new Scanner(subcommand);
-        String next = "";
-        while (scanner.hasNext()) {
-            next = scanner.next();
-            // If not a param
-            if (!isParam(next)) {
-                break;
-            }
-            // Trim off the : and add to the param list.
-            paramNames.add(extractParamKey(next));
-        }
-        // If the end of the string hasn't been reached
-        if (!scanner.hasNext()) {
-            next = "";
-        }
-        // Turn the remainder of the string into the subcommand
-        StringBuilder builder = new StringBuilder(next + " ");
-        while (scanner.hasNext()) {
-            builder.append(scanner.next()).append(" ");
-        }
-        scanner.close();
-        subcommand = builder.toString().trim();
+        subcommand = split.length > 1 ? split[1] : "";
         // Pass the rest of the work to the child node
-        CommandTreeNode node = children.get(key);
+        CommandTreeNode child = children.get(key);
         // Create a child if it doesn't already exist
         // (It probably doesn't, but this way commands don't have to be defined in order)
-        if (node == null) {
-            children.put(key, new CommandTreeNode(paramNames));
-            node = children.get(key);
+        if (child == null) {
+            children.put(key, new CommandTreeNode());
+            child = children.get(key);
         }
         // Recursive call
-        node.add(subcommand, description, usage, executor);
+        child.add(subcommand, description, usage, executor);
     }
 
     /**
@@ -93,16 +51,16 @@ class CommandTreeNode {
      * @param command
      * @param env
      */
-    protected void execute(CommandSender sender, String command, Map<String, String> env) throws Exception {
+    protected void execute(CommandSender sender, String command, Map<String, String[]> env) {
         // Base case: we've arrived at the final node
-        if (command.equals("")) {
+        if (command.isBlank()) {
             commandExecutor.execute(sender, env);
             return;
         }
         // Get the key/alias and subcommand
         String[] split = command.split(" ", 2);
         String key = split[0];
-        String subcommand = split[1];
+        String subcommand = split.length > 1 ? split[1] : "";
         // Easy-to-use ref to the next node to be called
         CommandTreeNode child = children.get(key);
         // Add any arguments to the environment
@@ -117,13 +75,7 @@ class CommandTreeNode {
             }
             args.add(token);
         }
-        if (args.size() != child.paramNames.size()) {
-            // TODO Handle incorrect number of params
-            throw new Exception(String.format("After '%s': expected %d args, %d supplied", key, paramNames.size(), args.size()));
-        }
-        for (int i = 0; i < child.paramNames.size(); i++) {
-            env.put(child.paramNames.get(i), args.get(i));
-        }
+        env.put(key, args.toArray(new String[0]));
         // If the end of the string hasn't been reached
         if (!scanner.hasNext()) {
             token = "";
@@ -165,13 +117,8 @@ class CommandTreeNode {
 
     protected String toStringRec(String key, int depth) {
         StringBuilder builder = new StringBuilder("\n");
-        for (int i = 0; i < depth; i++) {
-            builder.append("| ");
-        }
+        builder.append("| ".repeat(depth));
         builder.append(key);
-        for (String param : paramNames) {
-            builder.append(" :").append(param);
-        }
         for (String k : children.keySet()) {
             builder.append(children.get(k).toStringRec(k, depth + 1));
         }

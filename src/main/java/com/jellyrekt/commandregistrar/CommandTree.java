@@ -1,27 +1,20 @@
 package com.jellyrekt.commandregistrar;
 
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 
 public class CommandTree extends CommandTreeNode {
-    private String rootCommand;
     private JavaPlugin plugin;
     private CommandListener commandListener = new CommandListener(this);
 
     private static Set<CommandTree> registry = new HashSet<>();
 
-    public CommandTree(String rootCommand, JavaPlugin plugin) {
-        super(new ArrayList<>());
-        // TODO
-        // Validate that rootCommand contains only one token
-        this.rootCommand = rootCommand;
+    public CommandTree(JavaPlugin plugin) {
+        super();
         this.plugin = plugin;
         registry.add(this);
     }
@@ -46,32 +39,15 @@ public class CommandTree extends CommandTreeNode {
      * @param command
      */
     public void execute(CommandSender sender, String command) {
-        try {
-            // TODO this will probably cause an error if there's no subcommand provided
-            getChildren().get(rootCommand).execute(sender, stripExtraSpaces(command).split(" ", 2)[1], new HashMap<>());
-        } catch (Exception ex) {
-            plugin.getLogger().log(Level.WARNING, ex.getMessage());
-        }
+        super.execute(sender, command, new HashMap<>());
     }
 
     public void register() {
-        // Register the root command with the plugin
-        plugin
-                .getCommand(rootCommand)
-                .setExecutor(new org.bukkit.command.CommandExecutor() {
-                    @Override public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
-                        return true;
-                    }
-                });
         // Register the event listener
         plugin
                 .getServer()
                 .getPluginManager()
                 .registerEvents(commandListener, plugin);
-    }
-
-    protected String getRootCommand() {
-        return rootCommand;
     }
 
     protected JavaPlugin getPlugin() {
