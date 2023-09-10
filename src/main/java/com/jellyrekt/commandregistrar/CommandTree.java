@@ -11,12 +11,8 @@ public class CommandTree extends CommandTreeNode {
     private JavaPlugin plugin;
     private CommandListener commandListener = new CommandListener(this);
 
-    private static Set<CommandTree> registry = new HashSet<>();
-
     public CommandTree(JavaPlugin plugin) {
-        super();
         this.plugin = plugin;
-        registry.add(this);
     }
 
     /**
