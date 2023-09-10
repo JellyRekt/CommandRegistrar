@@ -36,6 +36,10 @@ public class CommandTree extends CommandTreeNode {
         super.execute(sender, command, new HashMap<>());
     }
 
+    /**
+     * Register the commands in this tree to the plugin.
+     * Root commands still need to be registered in plugin.yml.
+     */
     public void register() {
         // Register the event listener
         plugin
@@ -44,14 +48,18 @@ public class CommandTree extends CommandTreeNode {
                 .registerEvents(commandListener, plugin);
     }
 
-    protected JavaPlugin getPlugin() {
-        return plugin;
-    }
-
+    /**
+     * Trim the string and remove all repeated spaces.
+     * @param s String to fix.
+     * @return The passed string, with leading, trailing, and repeated spaces removed.
+     */
     static String stripExtraSpaces(String s) {
         return s.trim().replaceAll(" +", " ");
     }
 
+    /**
+     * @inheritDoc
+     */
     public String toString() {
         StringBuilder builder = new StringBuilder("\n");
         for (String key : getChildren().keySet()) {

@@ -113,6 +113,12 @@ class CommandTreeNode {
         return children;
     }
 
+    /**
+     * Helper to build string representation of the full tree.
+     * @param key This node's key
+     * @param depth This node's depth in the command tree
+     * @return String representation of this subtree
+     */
     protected String toStringRec(String key, int depth) {
         StringBuilder builder = new StringBuilder("\n");
         builder.append("| ".repeat(depth));
