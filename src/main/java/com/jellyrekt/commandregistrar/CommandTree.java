@@ -23,13 +23,11 @@ public class CommandTree extends CommandTreeNode {
      * Register a command.
      *
      * @param command     Full command string
-     * @param description Description for the command
-     * @param usage       Usage message for the command
      * @param executor    CommandExecutor to handle the command
      */
     @Override
-    public void add(String command, String description, String usage, CommandExecutor executor) {
-        super.add(stripExtraSpaces(command), description, usage, executor);
+    public void add(String command, CommandExecutor executor) {
+        super.add(stripExtraSpaces(command), executor);
     }
 
     /**

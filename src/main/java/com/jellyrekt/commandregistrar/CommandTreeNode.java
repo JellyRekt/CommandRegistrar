@@ -18,11 +18,9 @@ class CommandTreeNode {
      * Register a subcommand under this command.
      *
      * @param subcommand  Key (first token) of the subcommand
-     * @param description Description for the subcommand
-     * @param usage       Usage message for the subcommand
      * @param executor    CommandExecutor to handle the command
      */
-    void add(String subcommand, String description, String usage, CommandExecutor executor) {
+    void add(String subcommand, CommandExecutor executor) {
         // Base case: Empty string
         if (subcommand.isEmpty()) {
             this.commandExecutor = executor;
@@ -41,7 +39,7 @@ class CommandTreeNode {
             child = children.get(key);
         }
         // Recursive call
-        child.add(subcommand, description, usage, executor);
+        child.add(subcommand, executor);
     }
 
     /**
@@ -77,7 +75,7 @@ class CommandTreeNode {
         }
         env.put(key, args.toArray(new String[0]));
         // If the end of the string hasn't been reached
-        if (!scanner.hasNext()) {
+        if (!child.children.containsKey(token)) {
             token = "";
         }
         // Turn the remainder of the string into the subcommand
