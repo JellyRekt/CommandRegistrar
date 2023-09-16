@@ -4,15 +4,15 @@
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.jellyrekt.commandregistrar</groupId>
-	<artifactId>command-registrar</artifactId>
+	<groupId>com.jellyrekt.commandtree</groupId>
+	<artifactId>command-tree</artifactId>
 	<version>1.0-SNAPSHOT</version>
 
 	<distributionManagement>
 		<repository>
 			<id>github</id>
 			<name>GitHub JellyRekt Apache Maven Packages</name>
-			<url>https://maven.pkg.github.com/jellyrekt/CommandRegistrar</url>
+			<url>https://maven.pkg.github.com/jellyrekt/CommandTree</url>
 		</repository>
 	</distributionManagement>
 

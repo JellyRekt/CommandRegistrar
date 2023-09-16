@@ -70,11 +70,13 @@ mvn install
 ```
 
 Then, add this project to your plugin's Maven dependencies:
+
 ```xml
+
 <dependency>
-    <groupId>com.jellyrekt.commandregistrar</groupId>
-    <artifactId>command-registrar</artifactId>
-    <version>1.0-SNAPSHOT</version>
+	<groupId>com.jellyrekt.commandtreecom.jellyrekt.commandtree</groupId>
+	<artifactId>command-registrar</artifactId>
+	<version>1.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -88,7 +90,7 @@ One way to do this by adding Maven's shader plugin to your build plugins:
     <configuration>
         <filters>
             <filter>
-                <artifact>com.jellyrekt.commandregistrar:command-registrar</artifact>
+                <artifact>com.jellyrekt.commandtree:command-registrar</artifact>
                 <includes>
                     <include>com/jellyrekt/commandregistrar/CommandTree</include>
                     <include>com/jellyrekt/commandregistrar/CommandExecutor</include>
@@ -118,7 +120,7 @@ To use the CommandRegistrar, you must do the following in your `onEnable`:
 
 ### Implement CommandExecutor
 Rather than using `org.bukkit.CommandExecutor`,
-you will implement the class `com.jellyrekt.commandregistrar.CommandExecutor`.
+you will implement the class `com.jellyrekt.commandtree.CommandExecutor`.
 
 This interface provides the single method `execute`,
 which takes two arguments:
