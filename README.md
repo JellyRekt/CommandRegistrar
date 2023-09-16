@@ -1,4 +1,4 @@
-# CommandRegistrar
+# CommandTree
 CommandRegistrar is a simple way to register your long, multi-token commands and subcommands,
 without building a jungle of if-else statements.
 
