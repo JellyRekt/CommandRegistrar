@@ -1,5 +1,5 @@
 # CommandTree
-CommandRegistrar is a simple way to register your long, multi-token commands and subcommands,
+CommandTree is a simple way to register your long, multi-token commands and subcommands,
 without building a jungle of if-else statements.
 
 It can take your command registration from this:
@@ -60,7 +60,7 @@ There is no stable build; use at your own risk, and check often for updates.
 
 Feel free to report bugs, request features, and open discussions.
 
-### Including CommandRegistrar in your plugin
+### Including CommandTree in your plugin
 This plugin currently has no stable release.
 To use it, you must clone the project and install to your local Maven repository:
 ```bash
@@ -109,7 +109,7 @@ One way to do this by adding Maven's shader plugin to your build plugins:
 </plugin>
 ```
 
-### Using CommandRegistrar
+### Using CommandTree
 
 To use the CommandRegistrar, you must do the following in your `onEnable`:
 1. Define the CommandExecutor class
