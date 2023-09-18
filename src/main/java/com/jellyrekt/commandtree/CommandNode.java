@@ -17,6 +17,10 @@ public class CommandNode {
      * Permission needed to execute this command
      */
     private String permission = null;
+    /**
+     * Message sent when sender does not have permission to execute this command
+     */
+    private String permissionDeniedMessage = "§4Insufficient permission.";
 
     /**
      * Set the permission needed to execute this command.
@@ -25,6 +29,16 @@ public class CommandNode {
      */
     public CommandNode setPermission(String permission) {
         this.permission = permission;
+        return this;
+    }
+
+    /**
+     * Set the message sent when sender does not have permission to execute this command
+     * @param message Message to send
+     * @return self
+     */
+    public CommandNode setPermissionDeniedMessage(String message) {
+        permissionDeniedMessage = message;
         return this;
     }
 
@@ -69,7 +83,7 @@ public class CommandNode {
             // Check for permission
             if (permission != null && !sender.hasPermission(permission)) {
                 // TODO Allow developer to control how to handle this.
-                sender.sendMessage("§4Insufficient permission.");
+                sender.sendMessage(permissionDeniedMessage);
                 return;
             }
             commandExecutor.execute(sender, env);
