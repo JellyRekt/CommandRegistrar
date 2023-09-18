@@ -6,9 +6,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.HashMap;
 
 public class CommandTree extends CommandNode {
+    /**
+     * Plugin registering the commands
+     */
     private JavaPlugin plugin;
+    /**
+     * EventListener in charge of executing the commands
+     */
     private CommandListener commandListener = new CommandListener(this);
 
+    /**
+     * Create a CommandTree to register commands to the plugin.
+     * @param plugin Plugin registering the commands.
+     */
     public CommandTree(JavaPlugin plugin) {
         this.plugin = plugin;
     }
