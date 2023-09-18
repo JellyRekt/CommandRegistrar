@@ -55,8 +55,6 @@ static void registerCommands() {
     commandTree.register();
 }
 ```
-The use of if-else is not needed to parse out subcommands--
-only to parse arguments passed to each subcommand.
 
 ## Getting started
 
