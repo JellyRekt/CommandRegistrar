@@ -5,7 +5,7 @@ It takes the job of parsing subcommands and aliases away from you,
 freeing you to focus on argument handling and execution logic
 with cleaner, easier-to-read code.
 
-In other words can take your command registration from this:
+In other words, it can take your command registration from this:
 ```java
 public boolean execute(CommandSender sender, String command, String label, String[] args) {
     if (args.length <= 0) {
