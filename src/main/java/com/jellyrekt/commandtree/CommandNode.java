@@ -97,12 +97,15 @@ public class CommandNode {
         String key = split[0];
         subcommand = split.length > 1 ? split[1] : "";
         // Pass the rest of the work to the child node
-        CommandNode child = children.get(key);
+        CommandNode child = getChild(key);
         // Create a child if it doesn't already exist
         // (It probably doesn't, but this way commands don't have to be defined in order)
         if (child == null) {
+            // Add key as alias
+            childAliases.put(key, key);
+            // Create child
             children.put(key, new CommandNode(this, key));
-            child = children.get(key);
+            child = getChild(key);
         }
         // Recursive call
         return child.add(subcommand, executor);
@@ -131,7 +134,7 @@ public class CommandNode {
         String key = split[0];
         String subcommand = split.length > 1 ? split[1] : "";
         // Easy-to-use ref to the next node to be called
-        CommandNode child = children.get(key);
+        CommandNode child = getChild(key);
         // Add any arguments to the environment
         List<String> args = new ArrayList<>();
         Scanner scanner = new Scanner(subcommand);
@@ -139,14 +142,14 @@ public class CommandNode {
         while (scanner.hasNext()) {
             token = scanner.next();
             // Stop parsing args if a symbol has been reached
-            if (child.children.containsKey(token)) {
+            if (child.childAliases.containsKey(token)) {
                 break;
             }
             args.add(token);
         }
-        env.put(key, args.toArray(new String[0]));
+        env.put(childAliases.get(key), args.toArray(new String[0]));
         // If the end of the string hasn't been reached
-        if (!child.children.containsKey(token)) {
+        if (!child.childAliases.containsKey(token)) {
             token = "";
         }
         // Turn the remainder of the string into the subcommand
@@ -199,13 +202,13 @@ public class CommandNode {
      * @param depth This node's depth in the command tree
      * @return String representation of this subtree
      */
-    protected String toStringRec(String key, int depth) {
+    protected StringBuilder toStringRec(String key, int depth) {
         StringBuilder builder = new StringBuilder("\n");
         builder.append("| ".repeat(depth));
         builder.append(key);
         for (String k : children.keySet()) {
-            builder.append(children.get(k).toStringRec(k, depth + 1));
+            builder.append(getChild(k).toStringRec(k, depth + 1));
         }
-        return builder.toString();
+        return builder;
     }
 }
