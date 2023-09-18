@@ -1,8 +1,11 @@
 # CommandTree
 CommandTree is a simple way to register your long, multi-token commands and subcommands,
-without building a jungle of if-else statements.
+without building a jungle of nested if-else statements.
+It takes the job of parsing subcommands and aliases away from you,
+freeing you to focus on argument handling and execution logic
+with cleaner, easier-to-read code.
 
-It can take your command registration from this:
+In other words can take your command registration from this:
 ```java
 public boolean execute(CommandSender sender, String command, String label, String[] args) {
     if (args.length <= 0) {
@@ -33,19 +36,21 @@ To this:
 ```java
 static void registerCommands() {
     CommandTree commandTree=new CommandTree(this);
-    commandTree.add(
-        "team",
-        (commandSender,map)->commandSender.sendMessage("/team - Display this help message"));
-    commandTree.add("team create",
-        (commandSender,map)->{
+    commandTree
+        .add("team")
+        .setExecutor(commandSender,map) -> commandSender.sendMessage("/team - Display this help message"));
+    commandTree
+        .add("team create")
+        .setExecutor((commandSender,map) -> {
             if(map.get("create").length <= 0) commandSender.sendMessage("Usage: /team create <name>");
             else commandSender.sendMessage(String.format("Created team %s!",map.get("create")[0]));
-    });
-    commandTree.add("team join",
-        (commandSender,map)->{
+        });
+    commandTree
+        .add("team join")
+        .setExecutor(commandSender,map) -> {
             if(map.get("join").length <= 0) commandSender.sendMessage("Usage: /team join <name>");
             else commandSender.sendMessage(String.format("Joined team %s!",map.get("join")[0]));
-    });
+        });
 
     commandTree.register();
 }
@@ -162,7 +167,9 @@ We skip any arguments here, just adding a space-seperated list of our subcommand
 ```java
 public void onEnable() {
     CommandTree tree = new CommandTree(this);
-    tree.add("foo bar", new FooBarCommand());
+    tree
+        .add("foo bar")
+        .setExecutor(new FooBarCommand());
     // TODO
 }
 ```
@@ -175,10 +182,10 @@ and parse it for the correct executor.
 public void onEnable() {
     CommandTree tree = new CommandTree(this);
     // Add commands
-    tree.add("foo bar", new FooBarCommand());
-    tree.add("foo", new FooCommand());
-    tree.add("foo baz", new FooBazCommand());
-    tree.add("hello world", new HelloWorldCommand());
+    tree.add("foo bar").setExecutor(new FooBarCommand());
+    tree.add("foo").setExecutor(new FooCommand());
+    tree.add("foo baz").setExecutor(new FooBazCommand());
+    tree.add("hello world").setExecutor(new HelloWorldCommand());
     // Register
     tree.register();
 }
@@ -190,7 +197,8 @@ you can chain the `addAliases` method onto the `add` method.
 The following will allow executing `/foo bar` as `/foo b`.
 ```java
 tree
-    .add("foo bar", new FooBarCommand())
+    .add("foo bar")
+     setExecutor(new FooBarCommand())
     .addAliases("b");
 ```
 #### Require permissions for commands
@@ -198,7 +206,8 @@ If you want to check for a permission for players to use your commands,
 you can chain the `setPermission` method onto the `add` method.
 ```java
 tree
-    .add("foo bar", new FooBarCommand())
+    .add("foo bar")
+    .setExecutor(new FooBarCommand())
     .addAliases("b")
     .setPermission("command.foo.bar");
 ```
@@ -209,7 +218,8 @@ If you would like to change this message,
 you can do so by chaining the `setPermissionDeniedMessage` method.
 ```java
 tree
-    .add("foo bar", new FooBarCommand())
+    .add("foo bar")
+    .setExecutor(new FooBarCommand())
     .addAliases("b")
     .setPermission("command.foo.bar")
     .setPermissionDeniedMessage("You are not allowed to do that.");
@@ -220,7 +230,8 @@ you can do so by calling this method on the tree before adding any commands.
 ```java
 tree.setPermissionDeniedMessage("You are not allowed to do that.");
 tree
-    .add("foo bar", new FooBarCommand())
+    .add("foo bar")
+    .setExecutor(new FooBarCommand())
     .setPermission("command.foo.bar");
 ```
 

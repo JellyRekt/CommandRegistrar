@@ -213,6 +213,15 @@ public class CommandNode {
     }
 
     /**
+     * Determine whether the alias maps to a child of this ndoe.
+     * @param alias Alias to check for
+     * @return True if the given alias maps to a child of this node
+     */
+    boolean hasAlias(String alias) {
+        return childAliases.containsKey(alias);
+    }
+
+    /**
      * Helper to build string representation of the full tree.
      *
      * @param key   This node's key
