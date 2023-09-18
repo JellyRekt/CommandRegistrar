@@ -183,7 +183,7 @@ public void onEnable() {
     tree.register();
 }
 ```
-### Require permissions for commands
+#### Require permissions for commands
 If you want to check for a permission for players to use your commands,
 you can chain the `setPermission` method onto the `add` method.
 ```java
