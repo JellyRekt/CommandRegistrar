@@ -35,10 +35,10 @@ public boolean execute(CommandSender sender, String command, String label, Strin
 To this:
 ```java
 static void registerCommands() {
-    CommandTree commandTree=new CommandTree(this);
+    CommandTree commandTree = new CommandTree(this);
     commandTree
         .add("team")
-        .setExecutor(commandSender,map) -> commandSender.sendMessage("/team - Display this help message"));
+        .setExecutor((commandSender,map) -> commandSender.sendMessage("/team - Display this help message"));
     commandTree
         .add("team create")
         .setExecutor((commandSender,map) -> {
@@ -47,7 +47,7 @@ static void registerCommands() {
         });
     commandTree
         .add("team join")
-        .setExecutor(commandSender,map) -> {
+        .setExecutor((commandSender,map) -> {
             if(map.get("join").length <= 0) commandSender.sendMessage("Usage: /team join <name>");
             else commandSender.sendMessage(String.format("Joined team %s!",map.get("join")[0]));
         });
