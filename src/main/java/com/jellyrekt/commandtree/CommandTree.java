@@ -25,6 +25,7 @@ public class CommandTree extends CommandNode {
      * @param plugin Plugin registering the commands.
      */
     public CommandTree(JavaPlugin plugin) {
+        super(null, null);
         this.plugin = plugin;
     }
 
@@ -32,12 +33,11 @@ public class CommandTree extends CommandNode {
      * Register a command.
      *
      * @param command  Full command string
-     * @param executor CommandExecutor to handle the command
      */
     @Override
-    public CommandNode add(String command, CommandExecutor executor) {
+    public CommandNode add(String command) {
         return super
-                .add(stripExtraSpaces(command), executor)
+                .add(stripExtraSpaces(command))
                 .setPermissionDeniedMessage(permissionDeniedMessage);
     }
 

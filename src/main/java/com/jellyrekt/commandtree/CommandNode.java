@@ -10,9 +10,19 @@ public class CommandNode {
      */
     private Map<String, CommandNode> children = new HashMap<>();
     /**
-     * Executor to handle the command contained in this node
+     * Maps an alias to a child node's key
      */
-    private CommandExecutor commandExecutor;
+    private Map<String, String> childAliases = new HashMap<>();
+    /**
+     * Executor to handle the command contained in this node.
+     */
+    private CommandExecutor commandExecutor = (sender, env) -> {
+        return;
+    };
+    /**
+     * Key used by parent to reference this node
+     */
+    private String key;
     /**
      * Permission needed to execute this command
      */
@@ -21,9 +31,37 @@ public class CommandNode {
      * Message sent when sender does not have permission to execute this command
      */
     private String permissionDeniedMessage;
+    /**
+     * Parent of this command node
+     *
+     * @param parent
+     */
+    private CommandNode parent;
+
+    /**
+     * Create a command node.
+     *
+     * @param parent Parent of this command node
+     * @param key    Key used by parent to reference this node
+     */
+    protected CommandNode(CommandNode parent, String key) {
+        this.parent = parent;
+        this.key = key;
+    }
+
+    /**
+     * Set the CommandExecutor for this node.
+     * @param executor CommandExecutor
+     * @return self
+     */
+    public CommandNode setExecutor(CommandExecutor executor) {
+        commandExecutor = executor;
+        return this;
+    }
 
     /**
      * Set the permission needed to execute this command.
+     *
      * @param permission Permission needed to execute this command
      * @return self
      */
@@ -34,6 +72,7 @@ public class CommandNode {
 
     /**
      * Set the message sent when sender does not have permission to execute this command
+     *
      * @param message Message to send
      * @return self
      */
@@ -43,15 +82,29 @@ public class CommandNode {
     }
 
     /**
+     * Add aliases for this command node.
+     * Aliases are local to the level of the node;
+     * for example, adding "b" as an alias to the command "alpha beta"
+     * allows you to execute it with "alpha b".
+     *
+     * @param aliases Aliases for this command.
+     * @return self
+     */
+    public CommandNode addAliases(String... aliases) {
+        for (String a : aliases) {
+            parent.childAliases.put(a, key);
+        }
+        return this;
+    }
+
+    /**
      * Register a subcommand under this command.
      *
-     * @param subcommand  Key (first token) of the subcommand
-     * @param executor    CommandExecutor to handle the command
+     * @param subcommand Key (first token) of the subcommand
      */
-    CommandNode add(String subcommand, CommandExecutor executor) {
+    CommandNode add(String subcommand) {
         // Base case: Empty string
         if (subcommand.isEmpty()) {
-            this.commandExecutor = executor;
             return this;
         }
         // Consume the first token to use as a key
@@ -59,15 +112,18 @@ public class CommandNode {
         String key = split[0];
         subcommand = split.length > 1 ? split[1] : "";
         // Pass the rest of the work to the child node
-        CommandNode child = children.get(key);
+        CommandNode child = getChild(key);
         // Create a child if it doesn't already exist
         // (It probably doesn't, but this way commands don't have to be defined in order)
         if (child == null) {
-            children.put(key, new CommandNode());
-            child = children.get(key);
+            // Add key as alias
+            childAliases.put(key, key);
+            // Create child
+            children.put(key, new CommandNode(this, key));
+            child = getChild(key);
         }
         // Recursive call
-        return child.add(subcommand, executor);
+        return child.add(subcommand);
     }
 
     /**
@@ -82,7 +138,6 @@ public class CommandNode {
         if (command.isBlank()) {
             // Check for permission
             if (permission != null && !sender.hasPermission(permission)) {
-                // TODO Allow developer to control how to handle this.
                 sender.sendMessage(permissionDeniedMessage);
                 return;
             }
@@ -94,7 +149,7 @@ public class CommandNode {
         String key = split[0];
         String subcommand = split.length > 1 ? split[1] : "";
         // Easy-to-use ref to the next node to be called
-        CommandNode child = children.get(key);
+        CommandNode child = getChild(key);
         // Add any arguments to the environment
         List<String> args = new ArrayList<>();
         Scanner scanner = new Scanner(subcommand);
@@ -102,14 +157,14 @@ public class CommandNode {
         while (scanner.hasNext()) {
             token = scanner.next();
             // Stop parsing args if a symbol has been reached
-            if (child.children.containsKey(token)) {
+            if (child.childAliases.containsKey(token)) {
                 break;
             }
             args.add(token);
         }
-        env.put(key, args.toArray(new String[0]));
+        env.put(childAliases.get(key), args.toArray(new String[0]));
         // If the end of the string hasn't been reached
-        if (!child.children.containsKey(token)) {
+        if (!child.childAliases.containsKey(token)) {
             token = "";
         }
         // Turn the remainder of the string into the subcommand
@@ -121,6 +176,16 @@ public class CommandNode {
         subcommand = builder.toString().trim();
         // Call the subcommand on the child node
         child.execute(sender, subcommand, env);
+    }
+
+    /**
+     * Gets a child node by key or alias.
+     *
+     * @param key key or alias
+     * @return CommandNode child node
+     */
+    private CommandNode getChild(String key) {
+        return children.get(childAliases.get(key));
     }
 
     /**
@@ -148,18 +213,28 @@ public class CommandNode {
     }
 
     /**
+     * Determine whether the alias maps to a child of this ndoe.
+     * @param alias Alias to check for
+     * @return True if the given alias maps to a child of this node
+     */
+    boolean hasAlias(String alias) {
+        return childAliases.containsKey(alias);
+    }
+
+    /**
      * Helper to build string representation of the full tree.
-     * @param key This node's key
+     *
+     * @param key   This node's key
      * @param depth This node's depth in the command tree
      * @return String representation of this subtree
      */
-    protected String toStringRec(String key, int depth) {
+    protected StringBuilder toStringRec(String key, int depth) {
         StringBuilder builder = new StringBuilder("\n");
         builder.append("| ".repeat(depth));
         builder.append(key);
         for (String k : children.keySet()) {
-            builder.append(children.get(k).toStringRec(k, depth + 1));
+            builder.append(getChild(k).toStringRec(k, depth + 1));
         }
-        return builder.toString();
+        return builder;
     }
 }
