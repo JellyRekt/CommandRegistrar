@@ -10,6 +10,10 @@ public class CommandNode {
      */
     private Map<String, CommandNode> children = new HashMap<>();
     /**
+     * Maps an alias to a child node's key
+     */
+    private Map<String, String> childAliases = new HashMap<>();
+    /**
      * Executor to handle the command contained in this node
      */
     private CommandExecutor commandExecutor;
@@ -52,6 +56,21 @@ public class CommandNode {
      */
     public CommandNode setPermissionDeniedMessage(String message) {
         permissionDeniedMessage = message;
+        return this;
+    }
+
+    /**
+     * Add aliases for this command node.
+     * Aliases are local to the level of the node;
+     * for example, adding "b" as an alias to the command "alpha beta"
+     * allows you to execute it with "alpha b".
+     * @param aliases Aliases for this command.
+     * @return self
+     */
+    public CommandNode addAliases(String... aliases) {
+        for (String a : aliases) {
+            parent.children.put(a, this);
+        }
         return this;
     }
 
@@ -134,6 +153,15 @@ public class CommandNode {
         subcommand = builder.toString().trim();
         // Call the subcommand on the child node
         child.execute(sender, subcommand, env);
+    }
+
+    /**
+     * Gets a child node by key or alias.
+     * @param key key or alias
+     * @return CommandNode child node
+     */
+    private CommandNode getChild(String key) {
+        return children.get(childAliases.get(key));
     }
 
     /**
