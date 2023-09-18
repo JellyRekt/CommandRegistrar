@@ -18,6 +18,10 @@ public class CommandNode {
      */
     private CommandExecutor commandExecutor;
     /**
+     * Key used by parent to reference this node
+     */
+    private String key;
+    /**
      * Permission needed to execute this command
      */
     private String permission = null;
@@ -34,9 +38,11 @@ public class CommandNode {
     /**
      * Create a command node.
      * @param parent Parent of this command node
+     * @param key Key used by parent to reference this node
      */
-    protected CommandNode(CommandNode parent) {
+    protected CommandNode(CommandNode parent, String key) {
         this.parent = parent;
+        this.key = key;
     }
 
     /**
@@ -95,7 +101,7 @@ public class CommandNode {
         // Create a child if it doesn't already exist
         // (It probably doesn't, but this way commands don't have to be defined in order)
         if (child == null) {
-            children.put(key, new CommandNode(this));
+            children.put(key, new CommandNode(this, key));
             child = children.get(key);
         }
         // Recursive call

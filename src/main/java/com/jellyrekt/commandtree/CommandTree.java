@@ -25,7 +25,7 @@ public class CommandTree extends CommandNode {
      * @param plugin Plugin registering the commands.
      */
     public CommandTree(JavaPlugin plugin) {
-        super(null);
+        super(null, null);
         this.plugin = plugin;
     }
 
