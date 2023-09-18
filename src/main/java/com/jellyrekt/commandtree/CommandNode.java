@@ -75,7 +75,7 @@ public class CommandNode {
      */
     public CommandNode addAliases(String... aliases) {
         for (String a : aliases) {
-            parent.children.put(a, this);
+            parent.childAliases.put(a, key);
         }
         return this;
     }
@@ -120,7 +120,6 @@ public class CommandNode {
         if (command.isBlank()) {
             // Check for permission
             if (permission != null && !sender.hasPermission(permission)) {
-                // TODO Allow developer to control how to handle this.
                 sender.sendMessage(permissionDeniedMessage);
                 return;
             }
