@@ -90,10 +90,9 @@ One way to do this by adding Maven's shader plugin to your build plugins:
     <configuration>
         <filters>
             <filter>
-                <artifact>com.jellyrekt.commandtree:command-registrar</artifact>
+                <artifact>com.jellyrekt.commandtree:command-tree</artifact>
                 <includes>
-                    <include>com/jellyrekt/commandregistrar/CommandTree</include>
-                    <include>com/jellyrekt/commandregistrar/CommandExecutor</include>
+                    <include>com/jellyrekt/commandtree/**</include>
                 </includes>
             </filter>
         </filters>
