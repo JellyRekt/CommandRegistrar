@@ -20,8 +20,8 @@ public class CommandTree extends CommandTreeNode {
      * @param executor    CommandExecutor to handle the command
      */
     @Override
-    public void add(String command, CommandExecutor executor) {
-        super.add(stripExtraSpaces(command), executor);
+    public CommandTreeNode add(String command, CommandExecutor executor) {
+        return super.add(stripExtraSpaces(command), executor);
     }
 
     /**

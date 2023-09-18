@@ -20,11 +20,11 @@ class CommandTreeNode {
      * @param subcommand  Key (first token) of the subcommand
      * @param executor    CommandExecutor to handle the command
      */
-    void add(String subcommand, CommandExecutor executor) {
+    CommandTreeNode add(String subcommand, CommandExecutor executor) {
         // Base case: Empty string
         if (subcommand.isEmpty()) {
             this.commandExecutor = executor;
-            return;
+            return this;
         }
         // Consume the first token to use as a key
         String[] split = subcommand.split(" ", 2);
@@ -39,7 +39,7 @@ class CommandTreeNode {
             child = children.get(key);
         }
         // Recursive call
-        child.add(subcommand, executor);
+        return child.add(subcommand, executor);
     }
 
     /**
