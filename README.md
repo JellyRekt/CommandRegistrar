@@ -194,13 +194,22 @@ public void onEnable() {
 If you want to register aliases for your commands,
 you can chain the `addAliases` method onto the `add` method.
 
-The following will allow executing `/foo bar` as `/foo b`.
 ```java
+tree
+    .add("foo")
+    .addAliases("f");
 tree
     .add("foo bar")
      setExecutor(new FooBarCommand())
     .addAliases("b");
 ```
+
+The above will allow executing `/foo bar` as
+* `/foo bar`
+* `/foo b`
+* `/f bar`
+* `/f b`
+
 #### Require permissions for commands
 If you want to check for a permission for players to use your commands,
 you can chain the `setPermission` method onto the `add` method.
