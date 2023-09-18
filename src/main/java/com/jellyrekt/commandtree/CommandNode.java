@@ -13,6 +13,20 @@ class CommandNode {
      * Executor to handle the command contained in this node
      */
     private CommandExecutor commandExecutor;
+    /**
+     * Permission needed to execute this command
+     */
+    private String permission = null;
+
+    /**
+     * Set the permission needed to execute this command.
+     * @param permission Permission needed to execute this command
+     * @return self
+     */
+    CommandNode setPermission(String permission) {
+        this.permission = permission;
+        return this;
+    }
 
     /**
      * Register a subcommand under this command.
