@@ -66,6 +66,12 @@ public class CommandNode {
     protected void execute(CommandSender sender, String command, Map<String, String[]> env) {
         // Base case: we've arrived at the final node
         if (command.isBlank()) {
+            // Check for permission
+            if (permission != null && !sender.hasPermission(permission)) {
+                // TODO Allow developer to control how to handle this.
+                sender.sendMessage("§4Insufficient permission.");
+                return;
+            }
             commandExecutor.execute(sender, env);
             return;
         }

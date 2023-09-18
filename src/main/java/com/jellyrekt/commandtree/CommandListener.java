@@ -22,7 +22,8 @@ public class CommandListener implements Listener {
 
     @EventHandler
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        String command = CommandTree.stripExtraSpaces(event.getMessage());
+        // Also remove / from front of message
+        String command = CommandTree.stripExtraSpaces(event.getMessage()).substring(1);
         if (!isCommand(command)) {
             return;
         }
