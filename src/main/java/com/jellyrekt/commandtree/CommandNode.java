@@ -4,15 +4,43 @@ import org.bukkit.command.CommandSender;
 
 import java.util.*;
 
-class CommandTreeNode {
+public class CommandNode {
     /**
      * Nodes containing the subcommand of this node's command
      */
-    private Map<String, CommandTreeNode> children = new HashMap<>();
+    private Map<String, CommandNode> children = new HashMap<>();
     /**
      * Executor to handle the command contained in this node
      */
     private CommandExecutor commandExecutor;
+    /**
+     * Permission needed to execute this command
+     */
+    private String permission = null;
+    /**
+     * Message sent when sender does not have permission to execute this command
+     */
+    private String permissionDeniedMessage;
+
+    /**
+     * Set the permission needed to execute this command.
+     * @param permission Permission needed to execute this command
+     * @return self
+     */
+    public CommandNode setPermission(String permission) {
+        this.permission = permission;
+        return this;
+    }
+
+    /**
+     * Set the message sent when sender does not have permission to execute this command
+     * @param message Message to send
+     * @return self
+     */
+    public CommandNode setPermissionDeniedMessage(String message) {
+        permissionDeniedMessage = message;
+        return this;
+    }
 
     /**
      * Register a subcommand under this command.
@@ -20,26 +48,26 @@ class CommandTreeNode {
      * @param subcommand  Key (first token) of the subcommand
      * @param executor    CommandExecutor to handle the command
      */
-    void add(String subcommand, CommandExecutor executor) {
+    CommandNode add(String subcommand, CommandExecutor executor) {
         // Base case: Empty string
         if (subcommand.isEmpty()) {
             this.commandExecutor = executor;
-            return;
+            return this;
         }
         // Consume the first token to use as a key
         String[] split = subcommand.split(" ", 2);
         String key = split[0];
         subcommand = split.length > 1 ? split[1] : "";
         // Pass the rest of the work to the child node
-        CommandTreeNode child = children.get(key);
+        CommandNode child = children.get(key);
         // Create a child if it doesn't already exist
         // (It probably doesn't, but this way commands don't have to be defined in order)
         if (child == null) {
-            children.put(key, new CommandTreeNode());
+            children.put(key, new CommandNode());
             child = children.get(key);
         }
         // Recursive call
-        child.add(subcommand, executor);
+        return child.add(subcommand, executor);
     }
 
     /**
@@ -52,6 +80,12 @@ class CommandTreeNode {
     protected void execute(CommandSender sender, String command, Map<String, String[]> env) {
         // Base case: we've arrived at the final node
         if (command.isBlank()) {
+            // Check for permission
+            if (permission != null && !sender.hasPermission(permission)) {
+                // TODO Allow developer to control how to handle this.
+                sender.sendMessage(permissionDeniedMessage);
+                return;
+            }
             commandExecutor.execute(sender, env);
             return;
         }
@@ -60,7 +94,7 @@ class CommandTreeNode {
         String key = split[0];
         String subcommand = split.length > 1 ? split[1] : "";
         // Easy-to-use ref to the next node to be called
-        CommandTreeNode child = children.get(key);
+        CommandNode child = children.get(key);
         // Add any arguments to the environment
         List<String> args = new ArrayList<>();
         Scanner scanner = new Scanner(subcommand);
@@ -109,7 +143,7 @@ class CommandTreeNode {
         return s.substring(1);
     }
 
-    protected Map<String, CommandTreeNode> getChildren() {
+    protected Map<String, CommandNode> getChildren() {
         return children;
     }
 
