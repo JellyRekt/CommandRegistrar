@@ -4,7 +4,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.*;
 
-class CommandNode {
+public class CommandNode {
     /**
      * Nodes containing the subcommand of this node's command
      */
@@ -23,7 +23,7 @@ class CommandNode {
      * @param permission Permission needed to execute this command
      * @return self
      */
-    CommandNode setPermission(String permission) {
+    public CommandNode setPermission(String permission) {
         this.permission = permission;
         return this;
     }
