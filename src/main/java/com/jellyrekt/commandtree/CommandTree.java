@@ -5,7 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 
-public class CommandTree extends CommandTreeNode {
+public class CommandTree extends CommandNode {
     private JavaPlugin plugin;
     private CommandListener commandListener = new CommandListener(this);
 
@@ -20,7 +20,7 @@ public class CommandTree extends CommandTreeNode {
      * @param executor    CommandExecutor to handle the command
      */
     @Override
-    public CommandTreeNode add(String command, CommandExecutor executor) {
+    public CommandNode add(String command, CommandExecutor executor) {
         return super.add(stripExtraSpaces(command), executor);
     }
 

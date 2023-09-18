@@ -4,11 +4,11 @@ import org.bukkit.command.CommandSender;
 
 import java.util.*;
 
-class CommandTreeNode {
+class CommandNode {
     /**
      * Nodes containing the subcommand of this node's command
      */
-    private Map<String, CommandTreeNode> children = new HashMap<>();
+    private Map<String, CommandNode> children = new HashMap<>();
     /**
      * Executor to handle the command contained in this node
      */
@@ -20,7 +20,7 @@ class CommandTreeNode {
      * @param subcommand  Key (first token) of the subcommand
      * @param executor    CommandExecutor to handle the command
      */
-    CommandTreeNode add(String subcommand, CommandExecutor executor) {
+    CommandNode add(String subcommand, CommandExecutor executor) {
         // Base case: Empty string
         if (subcommand.isEmpty()) {
             this.commandExecutor = executor;
@@ -31,11 +31,11 @@ class CommandTreeNode {
         String key = split[0];
         subcommand = split.length > 1 ? split[1] : "";
         // Pass the rest of the work to the child node
-        CommandTreeNode child = children.get(key);
+        CommandNode child = children.get(key);
         // Create a child if it doesn't already exist
         // (It probably doesn't, but this way commands don't have to be defined in order)
         if (child == null) {
-            children.put(key, new CommandTreeNode());
+            children.put(key, new CommandNode());
             child = children.get(key);
         }
         // Recursive call
@@ -60,7 +60,7 @@ class CommandTreeNode {
         String key = split[0];
         String subcommand = split.length > 1 ? split[1] : "";
         // Easy-to-use ref to the next node to be called
-        CommandTreeNode child = children.get(key);
+        CommandNode child = children.get(key);
         // Add any arguments to the environment
         List<String> args = new ArrayList<>();
         Scanner scanner = new Scanner(subcommand);
@@ -109,7 +109,7 @@ class CommandTreeNode {
         return s.substring(1);
     }
 
-    protected Map<String, CommandTreeNode> getChildren() {
+    protected Map<String, CommandNode> getChildren() {
         return children;
     }
 
