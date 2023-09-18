@@ -183,12 +183,23 @@ public void onEnable() {
     tree.register();
 }
 ```
+#### Register aliases for commands
+If you want to register aliases for your commands,
+you can chain the `addAliases` method onto the `add` method.
+
+The following will allow executing `/foo bar` as `/foo b`.
+```java
+tree
+    .add("foo bar", new FooBarCommand())
+    .addAliases("b");
+```
 #### Require permissions for commands
 If you want to check for a permission for players to use your commands,
 you can chain the `setPermission` method onto the `add` method.
 ```java
 tree
     .add("foo bar", new FooBarCommand())
+    .addAliases("b")
     .setPermission("command.foo.bar");
 ```
 By default, if a player attempts to use a command for which they do not have the permission,
@@ -199,6 +210,7 @@ you can do so by chaining the `setPermissionDeniedMessage` method.
 ```java
 tree
     .add("foo bar", new FooBarCommand())
+    .addAliases("b")
     .setPermission("command.foo.bar")
     .setPermissionDeniedMessage("You are not allowed to do that.");
 ```
