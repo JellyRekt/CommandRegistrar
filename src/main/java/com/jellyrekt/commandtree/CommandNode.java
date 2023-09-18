@@ -21,6 +21,19 @@ public class CommandNode {
      * Message sent when sender does not have permission to execute this command
      */
     private String permissionDeniedMessage;
+    /**
+     * Parent of this command node
+     * @param parent
+     */
+    private CommandNode parent;
+
+    /**
+     * Create a command node.
+     * @param parent Parent of this command node
+     */
+    protected CommandNode(CommandNode parent) {
+        this.parent = parent;
+    }
 
     /**
      * Set the permission needed to execute this command.
@@ -63,7 +76,7 @@ public class CommandNode {
         // Create a child if it doesn't already exist
         // (It probably doesn't, but this way commands don't have to be defined in order)
         if (child == null) {
-            children.put(key, new CommandNode());
+            children.put(key, new CommandNode(this));
             child = children.get(key);
         }
         // Recursive call
