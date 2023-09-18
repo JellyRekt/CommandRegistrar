@@ -14,9 +14,11 @@ public class CommandNode {
      */
     private Map<String, String> childAliases = new HashMap<>();
     /**
-     * Executor to handle the command contained in this node
+     * Executor to handle the command contained in this node.
      */
-    private CommandExecutor commandExecutor;
+    private CommandExecutor commandExecutor = (sender, env) -> {
+        return;
+    };
     /**
      * Key used by parent to reference this node
      */
@@ -31,14 +33,16 @@ public class CommandNode {
     private String permissionDeniedMessage;
     /**
      * Parent of this command node
+     *
      * @param parent
      */
     private CommandNode parent;
 
     /**
      * Create a command node.
+     *
      * @param parent Parent of this command node
-     * @param key Key used by parent to reference this node
+     * @param key    Key used by parent to reference this node
      */
     protected CommandNode(CommandNode parent, String key) {
         this.parent = parent;
@@ -46,7 +50,18 @@ public class CommandNode {
     }
 
     /**
+     * Set the CommandExecutor for this node.
+     * @param executor CommandExecutor
+     * @return self
+     */
+    public CommandNode setExecutor(CommandExecutor executor) {
+        commandExecutor = executor;
+        return this;
+    }
+
+    /**
      * Set the permission needed to execute this command.
+     *
      * @param permission Permission needed to execute this command
      * @return self
      */
@@ -57,6 +72,7 @@ public class CommandNode {
 
     /**
      * Set the message sent when sender does not have permission to execute this command
+     *
      * @param message Message to send
      * @return self
      */
@@ -70,6 +86,7 @@ public class CommandNode {
      * Aliases are local to the level of the node;
      * for example, adding "b" as an alias to the command "alpha beta"
      * allows you to execute it with "alpha b".
+     *
      * @param aliases Aliases for this command.
      * @return self
      */
@@ -83,13 +100,11 @@ public class CommandNode {
     /**
      * Register a subcommand under this command.
      *
-     * @param subcommand  Key (first token) of the subcommand
-     * @param executor    CommandExecutor to handle the command
+     * @param subcommand Key (first token) of the subcommand
      */
-    CommandNode add(String subcommand, CommandExecutor executor) {
+    CommandNode add(String subcommand) {
         // Base case: Empty string
         if (subcommand.isEmpty()) {
-            this.commandExecutor = executor;
             return this;
         }
         // Consume the first token to use as a key
@@ -108,7 +123,7 @@ public class CommandNode {
             child = getChild(key);
         }
         // Recursive call
-        return child.add(subcommand, executor);
+        return child.add(subcommand);
     }
 
     /**
@@ -165,6 +180,7 @@ public class CommandNode {
 
     /**
      * Gets a child node by key or alias.
+     *
      * @param key key or alias
      * @return CommandNode child node
      */
@@ -198,7 +214,8 @@ public class CommandNode {
 
     /**
      * Helper to build string representation of the full tree.
-     * @param key This node's key
+     *
+     * @param key   This node's key
      * @param depth This node's depth in the command tree
      * @return String representation of this subtree
      */
