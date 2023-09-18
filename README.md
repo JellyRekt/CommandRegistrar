@@ -184,6 +184,39 @@ public void onEnable() {
     tree.register();
 }
 ```
+### Require permissions for commands
+If you want to check for a permission for players to use your commands,
+you can chain the `setPermission` method onto the `add` method.
+```java
+tree
+    .add("foo bar", new FooBarCommand())
+    .setPermission("command.foo.bar");
+```
+By default, if a player attempts to use a command for which they do not have the permission,
+they will receive the message `Insufficient permission`.
+
+If you would like to change this message,
+you can do so by chaining the `setPermissionDeniedMessage` method.
+```java
+tree
+    .add("foo bar", new FooBarCommand())
+    .setPermission("command.foo.bar")
+    .setPermissionDeniedMessage("You are not allowed to do that.");
+```
+
+If you prefer to change this default message for all commands on the tree,
+you can do so by calling this method on the tree before adding any commands.
+```java
+tree.setPermissionDeniedMessage("You are not allowed to do that.");
+tree
+    .add("foo bar", new FooBarCommand())
+    .setPermission("command.foo.bar");
+```
+
+Permissions only determine whether a user can execute a command.
+If you would like finer control, such as what arguments can be passed to a command,
+you must implement this logic yourself in the CommandExecutor.
+
 ### Register base commands to plugin.yml
 Bukkit executes our command by listening for command events.
 However, to fire a command event, a command registered in plugin.yml must be executed.
