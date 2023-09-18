@@ -20,7 +20,7 @@ public class CommandNode {
     /**
      * Message sent when sender does not have permission to execute this command
      */
-    private String permissionDeniedMessage = "§4Insufficient permission.";
+    private String permissionDeniedMessage;
 
     /**
      * Set the permission needed to execute this command.

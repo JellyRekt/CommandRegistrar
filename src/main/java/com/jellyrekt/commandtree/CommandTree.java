@@ -14,9 +14,14 @@ public class CommandTree extends CommandNode {
      * EventListener in charge of executing the commands
      */
     private CommandListener commandListener = new CommandListener(this);
+    /**
+     * Default permission denied message for commands under this tree
+     */
+    private String permissionDeniedMessage = "§4Insufficient permission.";
 
     /**
      * Create a CommandTree to register commands to the plugin.
+     *
      * @param plugin Plugin registering the commands.
      */
     public CommandTree(JavaPlugin plugin) {
@@ -26,12 +31,14 @@ public class CommandTree extends CommandNode {
     /**
      * Register a command.
      *
-     * @param command     Full command string
-     * @param executor    CommandExecutor to handle the command
+     * @param command  Full command string
+     * @param executor CommandExecutor to handle the command
      */
     @Override
     public CommandNode add(String command, CommandExecutor executor) {
-        return super.add(stripExtraSpaces(command), executor);
+        return super
+                .add(stripExtraSpaces(command), executor)
+                .setPermissionDeniedMessage(permissionDeniedMessage);
     }
 
     /**
@@ -57,7 +64,19 @@ public class CommandTree extends CommandNode {
     }
 
     /**
+     * Set the default permission denied message for commands registered to this tree.
+     * Does not affect nodes that are already on this tree.
+     * @param message Permission denied message
+     * @return self
+     */
+    public CommandTree setPermissionDeniedMessage(String message) {
+        permissionDeniedMessage = message;
+        return this;
+    }
+
+    /**
      * Trim the string and remove all repeated spaces.
+     *
      * @param s String to fix.
      * @return The passed string, with leading, trailing, and repeated spaces removed.
      */
