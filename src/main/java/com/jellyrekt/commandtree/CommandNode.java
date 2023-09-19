@@ -10,7 +10,7 @@ public class CommandNode {
      */
     private Map<String, CommandNode> children = new HashMap<>();
     /**
-     * Maps an alias to a child node's key
+     * Maps an alias to a child node's getKey
      */
     private Map<String, String> childAliases = new HashMap<>();
     /**
@@ -107,7 +107,7 @@ public class CommandNode {
         if (subcommand.isEmpty()) {
             return this;
         }
-        // Consume the first token to use as a key
+        // Consume the first token to use as a getKey
         String[] split = subcommand.split(" ", 2);
         String key = split[0];
         subcommand = split.length > 1 ? split[1] : "";
@@ -116,7 +116,7 @@ public class CommandNode {
         // Create a child if it doesn't already exist
         // (It probably doesn't, but this way commands don't have to be defined in order)
         if (child == null) {
-            // Add key as alias
+            // Add getKey as alias
             childAliases.put(key, key);
             // Create child
             children.put(key, new CommandNode(this, key));
@@ -144,7 +144,7 @@ public class CommandNode {
             commandExecutor.execute(sender, env);
             return;
         }
-        // Get the key/alias and subcommand
+        // Get the getKey/alias and subcommand
         String[] split = command.split(" ", 2);
         String key = split[0];
         String subcommand = split.length > 1 ? split[1] : "";
@@ -179,9 +179,9 @@ public class CommandNode {
     }
 
     /**
-     * Gets a child node by key or alias.
+     * Gets a child node by getKey or alias.
      *
-     * @param key key or alias
+     * @param key getKey or alias
      * @return CommandNode child node
      */
     private CommandNode getChild(String key) {
@@ -199,10 +199,10 @@ public class CommandNode {
     }
 
     /**
-     * Converts a param string to the key used for the environment
+     * Converts a param string to the getKey used for the environment
      *
      * @param s Param string (formatted according to rules)
-     * @return The string used as a key in the environment
+     * @return The string used as a getKey in the environment
      */
     private static String extractParamKey(String s) {
         return s.substring(1);
@@ -224,7 +224,7 @@ public class CommandNode {
     /**
      * Helper to build string representation of the full tree.
      *
-     * @param key   This node's key
+     * @param key   This node's getKey
      * @param depth This node's depth in the command tree
      * @return String representation of this subtree
      */
