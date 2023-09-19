@@ -145,6 +145,7 @@ If a commandsender executes `/foo Hello world bar goodbye`,
 
 The parser will automatically detect when the subcommand `bar` has been reached--
 so instead of including this as an arg to foo, it will begin a new set of args.
+You should name subcommands and their aliases so that they are unlikely to be something the user would pass as an argument to the parent command.
 
 ### Add the command to the tree
 First, in our `onEnable`, we need to instantiate the `CommandTree`,
