@@ -57,13 +57,8 @@ static void registerCommands() {
 
 ## Getting started
 
-NOTE: This project is in early development.
-There is no stable build; use at your own risk, and check often for updates.
-
-Feel free to report bugs, request features, and open discussions.
-
 ### Including CommandTree in your plugin
-This plugin currently has no stable release.
+This plugin currently has no package release
 To use it, you must clone the project and install to your local Maven repository:
 ```bash
 git clone git@github.com:JellyRekt/CommandRegistrar.git
