@@ -246,10 +246,10 @@ If you would like finer control, such as what arguments can be passed to a comma
 you must implement this logic yourself in the CommandExecutor.
 
 ### Register base commands to plugin.yml
-Bukkit executes our command by listening for command events.
-However, to fire a command event, a command registered in plugin.yml must be executed.
-Above, we have registered four commands, but internally,
-Bukkit only cares about our "base commands": `/foo` and `/hello`.
+Since our commands are executed by an event listener, this step is not strictly necessary.
+However, it does help Bukkit to notify administrators when other plugins' commands conflict with yours.
+
+Above, we have registered four commands, but only two base commands: `/foo` and `/hello`.
 These are what we need to register in our plugin.yml:
 ```yaml
 # plugin.yml
