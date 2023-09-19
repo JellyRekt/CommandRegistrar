@@ -12,8 +12,8 @@ public class IntArg extends AbstractCommandArg<Integer> {
     /**
      * @inheritdoc
      */
-    public IntArg(String key, int index, String name) {
-        super(key, index, name);
+    public IntArg(String key, String name) {
+        super(key, name);
     }
 
     /**
