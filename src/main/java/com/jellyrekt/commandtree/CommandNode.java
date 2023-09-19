@@ -1,5 +1,7 @@
 package com.jellyrekt.commandtree;
 
+import com.jellyrekt.commandtree.executor.CommandExecutor;
+import com.jellyrekt.commandtree.executor.ValidatedCommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import java.util.*;
@@ -139,6 +141,11 @@ public class CommandNode {
             // Check for permission
             if (permission != null && !sender.hasPermission(permission)) {
                 sender.sendMessage(permissionDeniedMessage);
+                return;
+            }
+            // Validate
+            if (commandExecutor instanceof ValidatedCommandExecutor) {
+                commandExecutor.execute(sender, ((ValidatedCommandExecutor) commandExecutor).validate(env));
                 return;
             }
             commandExecutor.execute(sender, env);

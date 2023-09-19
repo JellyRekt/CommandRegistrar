@@ -1,4 +1,4 @@
-package com.jellyrekt.commandtree.validator.arg;
+package com.jellyrekt.commandtree.arg;
 
 import java.util.Map;
 
@@ -8,5 +8,5 @@ public interface CommandArg<T> {
      * @param env Environment map
      * @return Validated argument
      */
-    public T validate(Map<String, String[]> env);
+    public T validate(String arg);
 }

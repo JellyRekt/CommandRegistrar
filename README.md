@@ -116,7 +116,7 @@ To use the CommandRegistrar, you must do the following in your `onEnable`:
 
 ### Implement CommandExecutor
 Rather than using `org.bukkit.CommandExecutor`,
-you will implement the class `com.jellyrekt.commandtree.CommandExecutor`.
+you will implement the class `com.jellyrekt.commandtree.executor.CommandExecutor`.
 
 This interface provides the single method `execute`,
 which takes two arguments:

@@ -1,4 +1,4 @@
-package com.jellyrekt.commandtree.validator.arg;
+package com.jellyrekt.commandtree.arg;
 
 public abstract class AbstractCommandArg<T> implements CommandArg<T> {
     /**
