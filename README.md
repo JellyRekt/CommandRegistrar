@@ -72,7 +72,7 @@ Then, add this project to your plugin's Maven dependencies:
 
 <dependency>
 	<groupId>com.jellyrekt.commandtree</groupId>
-	<artifactId>command-registrar</artifactId>
+	<artifactId>command-tree</artifactId>
 	<version>1.0-SNAPSHOT</version>
 </dependency>
 ```
