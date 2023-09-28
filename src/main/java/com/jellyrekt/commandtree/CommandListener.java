@@ -17,8 +17,6 @@ public class CommandListener implements Listener {
         if (!isCommand(command)) {
             return;
         }
-        // Cancelling prevents "Unknown command" message when using unregistered aliases.
-        event.setCancelled(true);
         tree.execute(event.getSender(), command);
     }
 
@@ -29,8 +27,6 @@ public class CommandListener implements Listener {
         if (!isCommand(command)) {
             return;
         }
-        // Cancelling prevents "Unknown command" message when using unregistered aliases.
-        event.setCancelled(true);
         tree.execute(event.getPlayer(), command);
     }
 

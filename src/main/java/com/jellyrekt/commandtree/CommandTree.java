@@ -1,6 +1,7 @@
 package com.jellyrekt.commandtree;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -56,6 +57,18 @@ public class CommandTree extends CommandNode {
      * Root commands still need to be registered in plugin.yml.
      */
     public void register() {
+        for (String baseCommand : getChildren().keySet()) {
+            PluginCommand command = plugin.getCommand(baseCommand);
+            if (command == null) {
+                plugin.getLogger().warning(String.format(
+                    "Command \"%s\" is not registered in plugin.yml. Please consider alerting the developers %s.",
+                    baseCommand,
+                    plugin.getPluginMeta().getAuthors()
+                ));
+                return;
+            }
+            command.setExecutor((sender, cmd, s, args) -> true);
+        }
         // Register the event listener
         plugin
                 .getServer()
